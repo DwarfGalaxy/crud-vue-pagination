@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { fetchPropertiesApi } from "./service";
-import { commonErrorHandler } from "../../../utils";
+import { fetchProjectName } from "./service";
+import { commonErrorHandler } from "@/utils/index";
 import { ref } from "vue";
 
 export const useProperties = defineStore("properties", () => {
@@ -9,6 +10,8 @@ export const useProperties = defineStore("properties", () => {
   const isLoading = ref(false);
   const error = ref(null);
   const totalProperties = ref(0);
+  const project = ref([]);
+  const status = ref([]);
   // =====================================
 
   // ==========fetch properties=================
@@ -31,9 +34,27 @@ export const useProperties = defineStore("properties", () => {
   };
   // ====================================================
 
+  // =======fetch project==============================
+  const fetchProject = async () => {
+    try {
+      isLoading.value = true;
+      const apiData = await fetchProjectName();
+      project.value = apiData;
+    } catch (error) {
+      commonErrorHandler(error);
+      error.value = error;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+  // ==================================================
+
   // =======Return the properties and methods you want to expose====
   return {
     fetchProperties,
+    fetchProject,
+    project,
+    status,
     properties,
     error,
     isLoading,
